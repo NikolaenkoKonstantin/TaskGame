@@ -5,7 +5,7 @@ public class Player extends Creature{
 
 
     public void getHealed(){
-        if(numberOfRemainingHeals > 0) {
+        if(numberOfRemainingHeals > 0 && tempHealth < maxHealth) {
             int healingOn = (int) (0.3 * maxHealth);
 
             if (maxHealth - tempHealth < healingOn) {
