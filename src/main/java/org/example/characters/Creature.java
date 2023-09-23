@@ -56,11 +56,17 @@ public class Creature {
     }
 
 
+    private int diceRoll(){
+        return random.nextInt(7);
+    }
+
+
     public void hit(Creature creature){
-        int attackModifier = attack - creature.getProtection() + 1;
+        int attackModifier = (attack - creature.getProtection()) > 0
+                ? attack - creature.getProtection() + 1 : 1;
 
         for(int i = 0; i < attackModifier; i++){
-            if(random.nextInt(7) >= 5 ){
+            if(diceRoll() >= 5 ){
                 System.out.println("Successful strike");
                 creature.takingDamage(damage);
                 levelUp(creature);
