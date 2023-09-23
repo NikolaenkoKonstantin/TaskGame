@@ -15,10 +15,7 @@ public class Player extends Creature{
             }
 
             numberOfRemainingHeals--;
-            System.out.println("get healed");
-        }
-        else {
-            System.out.println("No get healed");
+            System.out.println("get healed"); // For clarity
         }
     }
 

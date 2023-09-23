@@ -2,7 +2,7 @@ package org.example.characters;
 
 import java.util.Random;
 
-public class Creature {
+public abstract class Creature {
     private int level = 1;
     private int attack; // 1 - 30
     private int protection; // 1 - 30
@@ -14,15 +14,11 @@ public class Creature {
     Random random = new Random();
 
 
-    private boolean isDied(){
-        return isDied;
-    }
-
-
     private void levelUp(Creature creature){
         if(creature.isDied()) {
             this.level++;
             improveParameters();
+            System.out.println("level up"); // For clarity
         }
     }
 
@@ -32,6 +28,7 @@ public class Creature {
         this.protection++;
         healthChange();
         this.damage = new int[]{damage[0] + 1, damage[1] + 1};
+        System.out.println("update parameters"); // For clarity
     }
 
 
@@ -39,10 +36,11 @@ public class Creature {
         double percentTempHealth = (double) tempHealth / maxHealth;
         this.maxHealth += 5;
         this.tempHealth = (int) (this.maxHealth * percentTempHealth);
+        System.out.println("health change"); // For clarity
     }
 
 
-    public void takingDamage(int[] damage){
+    protected void takingDamage(int[] damage){
         int DamageDealt = random.nextInt(damage[0], damage[1]);
 
         if(tempHealth > DamageDealt){
@@ -51,7 +49,7 @@ public class Creature {
             tempHealth = 0;
         }
 
-        System.out.println("Damage taken " + DamageDealt);
+        System.out.println("Damage taken " + DamageDealt); // For clarity
         die();
     }
 
@@ -67,7 +65,7 @@ public class Creature {
 
         for(int i = 0; i < attackModifier; i++){
             if(diceRoll() >= 5 ){
-                System.out.println("Successful strike");
+                System.out.println("Successful strike"); // For clarity
                 creature.takingDamage(damage);
                 levelUp(creature);
                 break;
@@ -76,10 +74,10 @@ public class Creature {
     }
 
 
-    public void die(){
+    protected void die(){
         if(tempHealth == 0){
             this.isDied = true;
-            System.out.println("The creature died");
+            System.out.println("The creature died"); // For clarity
         }
     }
 
@@ -150,5 +148,10 @@ public class Creature {
 
     public void setDamage(int[] damage) {
         this.damage = damage;
+    }
+
+
+    private boolean isDied(){
+        return isDied;
     }
 }
