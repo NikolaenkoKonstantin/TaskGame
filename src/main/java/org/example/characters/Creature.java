@@ -6,51 +6,55 @@ public abstract class Creature {
     private int level = 1;
     private int attack; // 1 - 30
     private int protection; // 1 - 30
-    protected int tempHealth; // 0 - N
+    protected int currentHealth; // 0 - N
     protected int maxHealth;
-    private int[] damage; // N - M
-    private boolean isDied = false;
+    private int minDamage;
+    private int maxDamage;
+    private boolean dead = false;
 
-    Random random = new Random();
+    private final static Random random = new Random();
 
 
-    private void levelUp(Creature creature){
-        if(creature.isDied()) {
-            this.level++;
-            improveParameters();
-            System.out.println("level up"); // For clarity
-        }
+    private void levelUp() {
+        System.out.println("level up"); // For clarity
+        this.level++;
+        improveParameters();
     }
 
 
     private void improveParameters() {
+        System.out.println("update parameters"); // For clarity
         this.attack++;
         this.protection++;
-        healthChange();
-        this.damage = new int[]{damage[0] + 1, damage[1] + 1};
-        System.out.println("update parameters"); // For clarity
+        levelUpHealth();
+        this.minDamage++;
+        this.maxDamage++;
     }
 
 
-    private void healthChange() {
-        double percentTempHealth = (double) tempHealth / maxHealth;
-        this.maxHealth += 5;
-        this.tempHealth = (int) (this.maxHealth * percentTempHealth);
+    private void levelUpHealth() {
         System.out.println("health change"); // For clarity
+        double percentTempHealth = (double) currentHealth / maxHealth;
+        this.maxHealth += 5;
+        this.currentHealth = (int) (this.maxHealth * percentTempHealth);
     }
 
 
-    protected void takingDamage(int[] damage){
-        int DamageDealt = random.nextInt(damage[0], damage[1]);
+    protected void takeDamage(int minDamage, int maxDamage){
+        int damageDealt = random.nextInt(minDamage, maxDamage);
 
-        if(tempHealth > DamageDealt){
-            tempHealth -= DamageDealt;
+        if(currentHealth > damageDealt){
+            currentHealth -= damageDealt;
         }else{
-            tempHealth = 0;
+            currentHealth = 0;
         }
 
-        System.out.println("Damage taken " + DamageDealt); // For clarity
-        die();
+        System.out.println("Damage taken " + damageDealt); // For clarity
+
+        if(currentHealth == 0){
+            die();
+            System.out.println("The creature died"); // For clarity
+        }
     }
 
 
@@ -66,8 +70,12 @@ public abstract class Creature {
         for(int i = 0; i < attackModifier; i++){
             if(diceRoll() >= 5 ){
                 System.out.println("Successful strike"); // For clarity
-                creature.takingDamage(damage);
-                levelUp(creature);
+                creature.takeDamage(minDamage, maxDamage);
+
+                if(creature.isDead()) {
+                    levelUp();
+                }
+
                 break;
             }
         }
@@ -75,19 +83,17 @@ public abstract class Creature {
 
 
     protected void die(){
-        if(tempHealth == 0){
-            this.isDied = true;
-            System.out.println("The creature died"); // For clarity
-        }
+        this.dead = true;
     }
 
 
-    public Creature(int attack, int protection, int health, int[] damage) {
+    public Creature(int attack, int protection, int health, int minDamage, int maxDamage) {
         this.attack = attack;
         this.protection = protection;
-        this.tempHealth = health;
+        this.currentHealth = health;
         this.maxHealth = health;
-        this.damage = damage;
+        this.minDamage = minDamage;
+        this.maxDamage = maxDamage;
     }
 
 
@@ -96,7 +102,7 @@ public abstract class Creature {
     }
 
 
-    public void setAttack(int attack) {
+    protected void setAttack(int attack) {
         this.attack = attack;
     }
 
@@ -106,18 +112,18 @@ public abstract class Creature {
     }
 
 
-    public void setProtection(int protection) {
+    protected void setProtection(int protection) {
         this.protection = protection;
     }
 
 
-    public int getTempHealth() {
-        return tempHealth;
+    public int getCurrentHealth() {
+        return currentHealth;
     }
 
 
-    public void setTempHealth(int tempHealth) {
-        this.tempHealth = tempHealth;
+    public void setCurrentHealth(int currentHealth) {
+        this.currentHealth = currentHealth;
     }
 
 
@@ -126,7 +132,7 @@ public abstract class Creature {
     }
 
 
-    public void setMaxHealth(int maxHealth) {
+    protected void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
     }
 
@@ -141,17 +147,7 @@ public abstract class Creature {
     }
 
 
-    public int[] getDamage() {
-        return damage;
-    }
-
-
-    public void setDamage(int[] damage) {
-        this.damage = damage;
-    }
-
-
-    private boolean isDied(){
-        return isDied;
+    private boolean isDead(){
+        return dead;
     }
 }
