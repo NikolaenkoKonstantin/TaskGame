@@ -64,10 +64,10 @@ public abstract class Creature {
 
 
     public void hit(Creature creature){
-        int attackModifier = (attack - creature.getProtection()) > 0
+        int numberOfHitAttempts = (attack - creature.getProtection()) > 0
                 ? attack - creature.getProtection() + 1 : 1;
 
-        for(int i = 0; i < attackModifier; i++){
+        for(int i = 0; i < numberOfHitAttempts; i++){
             if(diceRoll() >= 5 ){
                 System.out.println("Successful strike"); // For clarity
                 creature.takeDamage(minDamage, maxDamage);
@@ -75,7 +75,6 @@ public abstract class Creature {
                 if(creature.isDead()) {
                     levelUp();
                 }
-
                 break;
             }
         }
