@@ -5,13 +5,16 @@ public class Player extends Creature{
 
 
     public void healYourself(){
+        int currentHealth = getCurrentHealth();
+        int maxHealth = getMaxHealth();
+
         if(numberOfRemainingHeals > 0 && currentHealth < maxHealth) {
             int healingOn = (int) (0.3 * maxHealth);
 
             if (maxHealth - currentHealth < healingOn) {
-                currentHealth = maxHealth;
+                setCurrentHealth(maxHealth);
             } else {
-                currentHealth += healingOn;
+                setCurrentHealth(healingOn);
             }
 
             numberOfRemainingHeals--;
@@ -21,6 +24,5 @@ public class Player extends Creature{
 
     public Player(int attack, int protection, int health, int minDamage, int maxDamage) {
         super(attack, protection, health, minDamage, maxDamage);
-        this.maxHealth = health;
     }
 }
