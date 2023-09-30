@@ -25,6 +25,22 @@ public abstract class Creature {
     }
 
 
+    public int getMinDamage() {
+        return minDamage;
+    }
+
+    public void setMinDamage(int minDamage) {
+        this.minDamage = minDamage;
+    }
+
+    public int getMaxDamage() {
+        return maxDamage;
+    }
+
+    public void setMaxDamage(int maxDamage) {
+        this.maxDamage = maxDamage;
+    }
+
     public int getAttack() {
         return attack;
     }
@@ -75,7 +91,12 @@ public abstract class Creature {
     }
 
 
-    private boolean isDead(){
+    public void setDead(boolean dead) {
+        this.dead = dead;
+    }
+
+
+    protected boolean isDead(){
         return dead;
     }
 
