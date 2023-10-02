@@ -14,7 +14,7 @@ public class Player extends Creature{
             if (maxHealth - currentHealth < healingOn) {
                 setCurrentHealth(maxHealth);
             } else {
-                setCurrentHealth(healingOn);
+                setCurrentHealth(currentHealth + healingOn);
             }
 
             numberOfRemainingHeals--;
