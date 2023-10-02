@@ -6,97 +6,47 @@ public abstract class Creature {
     private int level = 1;
     private int attack; // 1 - 30
     private int protection; // 1 - 30
-    protected int tempHealth; // 0 - N
-    protected int maxHealth;
-    private int[] damage; // N - M
-    private boolean isDied = false;
+    private int currentHealth; // 0 - N
+    private int maxHealth;
+    private int minDamage;
+    private int maxDamage;
+    private boolean dead = false;
 
-    Random random = new Random();
-
-
-    private void levelUp(Creature creature){
-        if(creature.isDied()) {
-            this.level++;
-            improveParameters();
-            System.out.println("level up"); // For clarity
-        }
-    }
+    private final static Random random = new Random();
 
 
-    private void improveParameters() {
-        this.attack++;
-        this.protection++;
-        healthChange();
-        this.damage = new int[]{damage[0] + 1, damage[1] + 1};
-        System.out.println("update parameters"); // For clarity
-    }
-
-
-    private void healthChange() {
-        double percentTempHealth = (double) tempHealth / maxHealth;
-        this.maxHealth += 5;
-        this.tempHealth = (int) (this.maxHealth * percentTempHealth);
-        System.out.println("health change"); // For clarity
-    }
-
-
-    protected void takingDamage(int[] damage){
-        int DamageDealt = random.nextInt(damage[0], damage[1]);
-
-        if(tempHealth > DamageDealt){
-            tempHealth -= DamageDealt;
-        }else{
-            tempHealth = 0;
-        }
-
-        System.out.println("Damage taken " + DamageDealt); // For clarity
-        die();
-    }
-
-
-    private int diceRoll(){
-        return random.nextInt(7);
-    }
-
-
-    public void hit(Creature creature){
-        int attackModifier = (attack - creature.getProtection()) > 0
-                ? attack - creature.getProtection() + 1 : 1;
-
-        for(int i = 0; i < attackModifier; i++){
-            if(diceRoll() >= 5 ){
-                System.out.println("Successful strike"); // For clarity
-                creature.takingDamage(damage);
-                levelUp(creature);
-                break;
-            }
-        }
-    }
-
-
-    protected void die(){
-        if(tempHealth == 0){
-            this.isDied = true;
-            System.out.println("The creature died"); // For clarity
-        }
-    }
-
-
-    public Creature(int attack, int protection, int health, int[] damage) {
+    public Creature(int attack, int protection, int health, int minDamage, int maxDamage) {
         this.attack = attack;
         this.protection = protection;
-        this.tempHealth = health;
+        this.currentHealth = health;
         this.maxHealth = health;
-        this.damage = damage;
+        this.minDamage = minDamage;
+        this.maxDamage = maxDamage;
     }
 
+
+    public int getMinDamage() {
+        return minDamage;
+    }
+
+    public void setMinDamage(int minDamage) {
+        this.minDamage = minDamage;
+    }
+
+    public int getMaxDamage() {
+        return maxDamage;
+    }
+
+    public void setMaxDamage(int maxDamage) {
+        this.maxDamage = maxDamage;
+    }
 
     public int getAttack() {
         return attack;
     }
 
 
-    public void setAttack(int attack) {
+    protected void setAttack(int attack) {
         this.attack = attack;
     }
 
@@ -106,18 +56,18 @@ public abstract class Creature {
     }
 
 
-    public void setProtection(int protection) {
+    protected void setProtection(int protection) {
         this.protection = protection;
     }
 
 
-    public int getTempHealth() {
-        return tempHealth;
+    public int getCurrentHealth() {
+        return currentHealth;
     }
 
 
-    public void setTempHealth(int tempHealth) {
-        this.tempHealth = tempHealth;
+    public void setCurrentHealth(int currentHealth) {
+        this.currentHealth = currentHealth;
     }
 
 
@@ -126,7 +76,7 @@ public abstract class Creature {
     }
 
 
-    public void setMaxHealth(int maxHealth) {
+    protected void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
     }
 
@@ -141,17 +91,83 @@ public abstract class Creature {
     }
 
 
-    public int[] getDamage() {
-        return damage;
+    public void setDead(boolean dead) {
+        this.dead = dead;
     }
 
 
-    public void setDamage(int[] damage) {
-        this.damage = damage;
+    protected boolean isDead(){
+        return dead;
     }
 
 
-    private boolean isDied(){
-        return isDied;
+    protected void levelUp() {
+        System.out.println("Level up"); // For clarity
+        this.level++;
+        improveParameters();
+    }
+
+
+    protected void improveParameters() {
+        System.out.println("Update parameters"); // For clarity
+        this.attack++;
+        this.protection++;
+        levelUpHealth();
+        this.minDamage++;
+        this.maxDamage++;
+    }
+
+
+    protected void levelUpHealth() {
+        System.out.println("Level up health"); // For clarity
+        double percentTempHealth = (double) currentHealth / maxHealth;
+        this.maxHealth += 5;
+        this.currentHealth = (int) (this.maxHealth * percentTempHealth);
+    }
+
+
+    protected void takeDamage(int minDamage, int maxDamage){
+        int damageDealt = random.nextInt(minDamage, maxDamage);
+
+        if(currentHealth > damageDealt){
+            currentHealth -= damageDealt;
+        }else{
+            currentHealth = 0;
+        }
+
+        System.out.println("Damage taken " + damageDealt); // For clarity
+
+        if(currentHealth == 0){
+            die();
+            System.out.println("The creature died"); // For clarity
+        }
+    }
+
+
+    private int diceRoll(){
+        return random.nextInt(7);
+    }
+
+
+    public void hit(Creature creature){
+        int numberOfHitAttempts = (attack - creature.getProtection()) > 0
+                ? attack - creature.getProtection() + 1 : 1;
+
+        for(int i = 0; i < numberOfHitAttempts; i++){
+            if(diceRoll() >= 5 ){
+                System.out.println("Successful strike"); // For clarity
+                creature.takeDamage(minDamage, maxDamage);
+
+                if(creature.isDead()) {
+                    levelUp();
+                }
+                break;
+            }
+        }
+    }
+
+
+    protected void die(){
+        this.dead = true;
     }
 }
